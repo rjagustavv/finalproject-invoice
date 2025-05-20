@@ -46,7 +46,7 @@
 
                         <!-- Invoice Details -->
                         <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Detail Invoice</h3>
-                        <div id="invoice-details-container" class="space-y-4">
+                        <div id="invoice-details-container" class="space-y-4 text-black">
                             <!-- Detail item template (hidden) -->
                             <div class="detail-item-template hidden p-4 border border-gray-200 rounded-md">
                                 <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -80,7 +80,7 @@
                             <!-- End of template -->
                         </div>
 
-                        <button type="button" id="add-detail-item" class="mt-4 mb-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        <button type="button" id="add-detail-item" class="mt-4 mb-6 bg-green-500 hover:bg-green-700 text-black font-bold py-2 px-4 rounded">
                             Add Line
                         </button>
                         <small class="block text-xs text-gray-500 mb-6">Untuk menambahkan baris baru pada detail invoice</small>
@@ -94,7 +94,7 @@
 
 
                         <div class="flex items-center justify-end mt-4">
-                            <button type="submit" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                            <button type="submit" class="bg-indigo-500 hover:bg-indigo-700 text-black font-bold py-2 px-4 rounded">
                                 Save
                             </button>
                         </div>

@@ -14,8 +14,9 @@ class Invoice extends Model
         'invoice_number',
         'customer_name',
         'delivery_date',
-        'submit_date', // Jika Anda ingin mengisinya secara manual, jika tidak, biarkan dikelola oleh timestamps
-        'total_price',
+        'submit_date', 
+        'total_amount',
+        'user_id',
     ];
 
     protected $casts = [

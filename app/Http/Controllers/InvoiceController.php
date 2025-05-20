@@ -7,6 +7,7 @@ use App\Models\InvoiceDetail; // Tambahkan ini
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule; // Untuk validasi unik saat update
 
 class InvoiceController extends Controller
@@ -28,8 +29,8 @@ class InvoiceController extends Controller
         $year = date('y');
         $prefix = "JSGI-INV-{$year}-";
         $lastInvoice = Invoice::where('invoice_number', 'LIKE', $prefix . '%')
-                              ->orderBy('invoice_number', 'desc')
-                              ->first();
+            ->orderBy('invoice_number', 'desc')
+            ->first();
         $nextNumber = 1;
         if ($lastInvoice) {
             $lastNumStr = substr($lastInvoice->invoice_number, strlen($prefix));
@@ -58,11 +59,11 @@ class InvoiceController extends Controller
             'details.*.price' => 'required|numeric|min:0',
         ]);
 
-        DB::beginTransaction();
+                DB::beginTransaction();
         try {
-            $totalPrice = 0;
+            $totalAmount = 0;
             foreach ($request->details as $detail) {
-                $totalPrice += (float)$detail['price'];
+                $totalAmount += (float)$detail['price'];
             }
 
             $invoice = Invoice::create([
@@ -70,7 +71,8 @@ class InvoiceController extends Controller
                 'customer_name' => $request->customer_name,
                 'delivery_date' => $request->delivery_date,
                 'submit_date' => Carbon::now(),
-                'total_price' => $totalPrice,
+                'total_amount' => $totalAmount, 
+                'user_id' => Auth::id(), // Tambahkan ini untuk mengambil ID user yang login
             ]);
 
             foreach ($request->details as $detailData) {
@@ -125,16 +127,16 @@ class InvoiceController extends Controller
 
         DB::beginTransaction();
         try {
-            $totalPrice = 0;
+            $totalAmount = 0;
             foreach ($request->details as $detail) {
-                $totalPrice += (float)$detail['price'];
+                $totalAmount += (float)$detail['price'];
             }
 
             $invoice->update([
                 'customer_name' => $request->customer_name,
                 'delivery_date' => $request->delivery_date,
                 // 'submit_date' => Carbon::now(), // Biasanya submit_date tidak diubah saat edit, atau sesuai kebutuhan
-                'total_price' => $totalPrice,
+                'total_amount' => $totalAmount,
             ]);
 
             // Hapus detail lama
@@ -148,7 +150,6 @@ class InvoiceController extends Controller
 
             DB::commit();
             return redirect()->route('invoices.index')->with('success', 'Invoice updated successfully.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'Error updating invoice: ' . $e->getMessage());
@@ -170,5 +171,11 @@ class InvoiceController extends Controller
             DB::rollBack();
             return redirect()->route('invoices.index')->with('error', 'Error deleting invoice: ' . $e->getMessage());
         }
+    }
+
+    public function print(Invoice $invoice)
+    {
+        $invoice->load('details'); // Pastikan detail invoice juga dimuat
+        return view('invoices.print', compact('invoice'));
     }
 }
